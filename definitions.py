@@ -1,4 +1,3 @@
-gesetz_bezeichnung = "StGB"
 
 laws = [
     ("AO", "Abgabenordnung", "§§ 369 bis 376", "https://www.gesetze-im-internet.de/ao_1977/BJNR006130976.html"),
@@ -104,15 +103,7 @@ laws = [
     ("ZAG", "Zahlungsdiensteaufsichtsgesetz", "§ 63", "https://www.gesetze-im-internet.de/zag_2018/BJNR244610017.html"),
     ("ZDG", "Zivildienstgesetz", "§§ 52 bis 54", "https://www.gesetze-im-internet.de/ersdig/BJNR000100960.html")
 ]
-help_words = {
-  "help",
-  "Help",
-  "?",
-  "Hilfe",
-  "hilfe",
-  "h",
-  "-h",
-}
+
 number_words = {
     "einem": 1,
     "zwei": 2,
@@ -132,6 +123,5 @@ unit_factors = {
     "Jahren": 1,
     "Jahr": 1,
 }
-
 
 
