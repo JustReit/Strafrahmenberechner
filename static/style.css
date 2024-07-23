@@ -1,0 +1,32 @@
+
+:root {
+    --background-color: #1b1b1f; /* Dark mode background color */
+    --background-secondary: #44474f; /* Dark mode background color */
+    --background-tertiaray: #bfc6dc; /* Dark mode background color */
+    --text-color: #ffffff; /* Dark mode text color */
+    --text-secondary: #030712FF; /* Dark mode text color */
+    --text-tertiary: #293041; /* Dark mode tertiary text color */
+}
+
+.light-mode {
+    --background-color: #FFFBFE; /* Light mode background color */
+    --background-secondary: #e1e2ec; /* Dark mode background color */
+    --background-tertiaray: #575e71; /* Dark mode background color */
+    --text-color: #002e69; /* Light mode text color */
+    --text-secondary: #004494; /* Light mode text color */
+    --text-tertiary:#ffffff; /* Light mode tertiary text color */
+}
+
+
+.paragraph-container {
+    background: #004494;
+    color: #bfc6dc;
+    border: 1px solid #000;
+    border-radius:0.5rem;
+    padding: 1rem;
+    margin: 10px;
+    max-height: 20rem;
+    overflow: hidden;
+    transition: max-height 0.7s ease-in;
+}
+

@@ -4,7 +4,8 @@ const showTextCheckbox = document.getElementById('showText');
 input_paragraphen.value = '';
 const resultsDiv = document.getElementById("results");
 localStorage.removeItem('paragraph');
-const maxSelectedTags = 10;
+const maxSelectedTags = 50;
+let  showTextChecked = false;
 let gesetze = [];
 let paragraphen = [];
 let num_reductions = 0
@@ -30,11 +31,8 @@ paragraphen_tagify = new Tagify(input_paragraphen, {
     maxTags: maxSelectedTags
 });
 
-gesetze_tagify.on('add', SubmitGesetze);
-gesetze_tagify.on('remove', SubmitGesetze);
-paragraphen_tagify.on('add', SubmitParagraphen);
-paragraphen_tagify.on('remove', SubmitParagraphen);
-
+gesetze_tagify.on('change', SubmitGesetze);
+paragraphen_tagify.on('change', SubmitParagraphen);
 
 
 
@@ -44,6 +42,7 @@ paragraphen_tagify.on('remove', SubmitParagraphen);
     paragraphen = [];
     paragraphen_tagify.settings.whitelist = [];
     await fetchParagraphen(gesetzArray);
+    updateResults();
 }
 
 function SubmitParagraphen() {
@@ -174,21 +173,17 @@ function yearsToMonthsAndDays(num) {
 function createParagraphDiv() {
     const paragraphDiv = document.createElement('div');
     paragraphDiv.classList.add('paragraph-container', 'col-6', 'col-sm-4', 'col-md-3', 'col-lg-2', 'mb-3');
-    paragraphDiv.style.border = '1px solid #000';
-    paragraphDiv.style.borderRadius = "5px";
-    paragraphDiv.style.backgroundColor = `rgba(0, 62, 248, 0.57)`;
-    paragraphDiv.style.padding = '10px';
-    paragraphDiv.style.margin = '10px';
-    paragraphDiv.style.maxHeight = '20rem';
-    paragraphDiv.style.overflow = 'hidden';
-    paragraphDiv.style.transition = 'max-height 0.5s ease';
 
     paragraphDiv.addEventListener('mouseenter', () => {
-        paragraphDiv.style.maxHeight = 'none';
+        if (showTextChecked) {
+            paragraphDiv.style.maxHeight = 'none';
+        }
     });
 
     paragraphDiv.addEventListener('mouseleave', () => {
-        paragraphDiv.style.maxHeight = '20rem';
+        if (showTextChecked) {
+            paragraphDiv.style.maxHeight = '20rem';
+        }
     });
 
     return paragraphDiv;
@@ -207,9 +202,11 @@ function printMinMaxValues(paragraphDiv, min_value, max_value) {
     if (min_value < 1 && min_value > 0) {
         paragraphDiv.innerHTML += `<p>Verbrechen: Nein</p>`;
         paragraphDiv.innerHTML += `<p>Min: ${min_value * 12} Monate</p>`;
+        paragraphDiv.dataset.felony = false;
     } else if (min_value >= 1) {
         paragraphDiv.innerHTML += `<p>Verbrechen: Ja</p>`;
         paragraphDiv.innerHTML += `<p>Min: ${min_value} Jahre</p>`;
+        paragraphDiv.dataset.felony = false;
     }
     if (num_reductions !== 0) {
         let [years, months, days] = yearsToMonthsAndDays(max_value);
@@ -255,12 +252,16 @@ function printResult(title, absatz, fine, min_value, max_value, lawtext, url, re
     printMinMaxValues(paragraphDiv,min_value, max_value);
     printFineInfo(paragraphDiv, fine);
     printLawText(paragraphDiv, showTextCheckbox.checked, lawtext, url);
-
+    paragraphDiv.dataset.minValue = min_value;
+    paragraphDiv.dataset.maxValue = max_value;
+    paragraphDiv.dataset.fine = fine;
+    paragraphDiv.dataset.law =url;
+    paragraphDiv.dataset.title =title;
     resultsDiv.appendChild(paragraphDiv);
 }
 
 showTextCheckbox.addEventListener('change', function () {
-    const showTextChecked = this.checked;
+     showTextChecked = this.checked;
 
     // Toggle visibility of law text paragraphs
     const lawtextParagraphs = document.querySelectorAll('.lawtext-paragraph');
@@ -392,4 +393,41 @@ document.getElementById("search").addEventListener("input", function (e) {
     });
 });
 
+function sortItems(sortMethod) {
+    // Get the list of items
+    const items = Array.from(resultsDiv.children);
+    // Sort the items based on the selected sorting method
+    console.log(items);
+    const sortedItems = items.sort((a, b) => {
 
+        let itemA = a.dataset[sortMethod];
+        let itemB = b.dataset[sortMethod];
+        if (sortMethod === 'minValue') {
+            console.log(parseFloat(itemB));
+            // Convert values to numbers for numeric comparison
+            return parseFloat(itemA) - parseFloat(itemB);
+        }
+       else if ( sortMethod === 'maxValue') {
+           if(itemB === "Lebenslänglich"){
+               itemB = 20;
+           }
+            if(itemA === "Lebenslänglich"){
+                itemA = 20;
+            }
+            // Convert values to numbers for numeric comparison
+            return parseInt(itemB, 10) - parseInt(itemA, 10);
+        }
+        else {
+            // For other fields, use string comparison
+            return itemA.localeCompare(itemB);
+        }
+    });
+
+    // Clear the current list
+    resultsDiv.innerHTML = '';
+
+    // Append the sorted items to the list
+    sortedItems.forEach(item => {
+        resultsDiv.appendChild(item);
+    });
+}

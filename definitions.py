@@ -124,4 +124,8 @@ unit_factors = {
     "Jahr": 1,
 }
 
+penality_words = {
+    "so ist die Strafe",
+    "bestraft",
+}
 
